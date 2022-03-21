@@ -12,7 +12,7 @@ const main = async () => {
     if (!BASE_PATH) {
     // if (!BASE_PATH || !EXPORTED_BASE_PATH) {
       console.log(
-        "Especifique o diretório raíz do projeto analisado e do projeto exportado. Exemplo: 'node index.js C:\\Users\\documents\\MeuProjeto C:\\Users\\documents\\MeuProjetoExportado'"
+        "Specify the root directory of the analyzed project and the directory of the exported project. Example: 'node index.js C:\\Users\\documents\\MeuProjeto C:\\Users\\documents\\MeuProjetoExportado'"
       );
       return;
     } else {
