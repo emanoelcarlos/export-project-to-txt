@@ -6,15 +6,15 @@ let EXPORTED_BASE_PATH = "";
 
 const main = async () => {
   try {
+    //Picking up user inputs arguments
     BASE_PATH = process.argv[2];
     EXPORTED_BASE_PATH = process.argv[3];
 
-    if (!BASE_PATH) {
-    // if (!BASE_PATH || !EXPORTED_BASE_PATH) {
-      console.log(
-        "Specify the root directory of the analyzed project and the directory of the exported project. Example: 'node index.js C:\\Users\\documents\\MeuProjeto C:\\Users\\documents\\MeuProjetoExportado'"
-      );
-      return;
+    //Verifying if both paths were provided
+    if (!BASE_PATH || !EXPORTED_BASE_PATH) {
+      throw Error("In the line command specify the root directory of the analyzed project and the directory of the exported project. \n \
+        Example: 'node index.js C:\\Users\\documents\\MeuProjeto C:\\Users\\documents\\MeuProjetoExportado'");
+
     } else {
       console.log("Scanning file structure ...");
       const listAllfiles = getListAllfiles(BASE_PATH);
@@ -29,6 +29,12 @@ const main = async () => {
   }
 };
 
+/**
+ * Recursively analyze the project structure
+ * @param {*} dirPath Base path of original project directory
+ * @param {*} arrayOfFiles Array of all file paths in the original project 
+ * @returns Array of all file paths in the original project 
+ */
 const getListAllfiles = (dirPath, arrayOfFiles) => {
   files = fs.readdirSync(dirPath);
 
@@ -36,11 +42,11 @@ const getListAllfiles = (dirPath, arrayOfFiles) => {
 
   files.forEach((file) => {
     let actualPath = dirPath + "/" + file;
-    
+
     if (fs.statSync(actualPath).isDirectory()) {
       createMirroredDirectoryIfItDoesNotExists(actualPath);
       arrayOfFiles = getListAllfiles(actualPath, arrayOfFiles);
-    } else { 
+    } else {
       arrayOfFiles.push(path.join(dirPath, "/", file));
     }
   });
@@ -48,26 +54,29 @@ const getListAllfiles = (dirPath, arrayOfFiles) => {
   return arrayOfFiles;
 };
 
+/**
+ * Creates the respective subdirectory in the copied project structure
+ * @param {*} directoryPath The corresponding directory path in the copyied project
+ */
 const createMirroredDirectoryIfItDoesNotExists = (directoryPath) => {
   let mirroredPath = replaceBasePath(directoryPath);
   fs.mkdirSync(mirroredPath);
-}
+};
 
-const converFilesToTXT = (listAllfiles) => { 
+/**
+ * Exports all the original files in .txt format into the copied project
+ * @param {*} listAllfiles Array of original file paths
+ */
+const converFilesToTXT = (listAllfiles) => {
   listAllfiles.forEach((file) => {
-    fs.copyFile(file, replaceBasePath(file) + ".txt", err => {
+    fs.copyFile(file, replaceBasePath(file) + ".txt", (err) => {
       if (err) throw err;
     });
-  })
+  });
 };
 
 const replaceBasePath = (filePath) => {
   return filePath.toString().replace(BASE_PATH, EXPORTED_BASE_PATH);
-}
+};
 
 main();
-
-/**
- * TODO: mkdirSync(): delete or ignore directory once it already exists
- */
-
